@@ -53,6 +53,10 @@
       </ul>
     </nav>
     <div class="header-cta">
+      <div class="utility-row">
+        <a class="utility-btn" href="tel:+84(0)28xxxxxxxx" aria-label="Gọi điện thoại" title="+84 (0) 28 xxxx xxxx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></a>
+        <a class="utility-btn" href="contact.html" aria-label="Gửi yêu cầu báo giá" title="Yêu cầu báo giá"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a>
+      </div>
       <a href="contact.html" class="btn btn-primary btn-sm">Yêu cầu báo giá</a>
       <button class="nav-toggle" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
     </div>
@@ -75,7 +79,8 @@
       <div class="form-card">
         <h3 style="margin-bottom:6px">Gửi yêu cầu báo giá (RFQ)</h3>
         <p class="field-note" style="margin-bottom:22px">Điền càng chi tiết, đội ngũ kỹ thuật càng phản hồi nhanh và chính xác.</p>
-        <form data-rfq-form>
+        <form data-rfq-form action="https://formspree.io/f/maeyjzpg" method="POST">
+          <input type="hidden" name="_subject" value="Yêu cầu báo giá (RFQ) — Website Betaratio">
           <div class="form-row">
             <div class="field"><label>Họ và tên *</label><input type="text" name="name" required placeholder="Nguyễn Văn A"></div>
             <div class="field"><label>Tên công ty *</label><input type="text" name="company" required placeholder="Công ty TNHH ..."></div>
@@ -116,10 +121,10 @@
           <div class="field">
             <label>Đính kèm bản vẽ / mẫu (tùy chọn)</label>
             <input type="file" name="attachment">
-            <p class="field-note">Kết nối trường này với dịch vụ backend (Formspree, Google Form, email API...) trước khi triển khai thực tế — xem README.md.</p>
+            <p class="field-note">Tối đa 10MB/tệp — file gửi kèm sẽ đến trực tiếp email đội ngũ kỹ thuật cùng yêu cầu báo giá.</p>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Gửi yêu cầu báo giá <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
-          <p data-form-note style="display:none;margin-top:14px;padding:12px 14px;background:#eefaf7;border:1px solid #c7ece7;border-radius:8px;color:var(--teal-600);font-size:13.5px;font-weight:600"></p>
+          <button type="submit" class="btn btn-primary btn-block" data-rfq-submit>Gửi yêu cầu báo giá <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+          <p data-form-note style="display:none;margin-top:14px;padding:12px 14px;border-radius:8px;font-size:13.5px;font-weight:600"></p>
         </form>
       </div>
 
@@ -186,18 +191,23 @@
           <li><a href="contact.html">Liên hệ</a></li>
         </ul>
       </div>
-      <div>
-        <h5>Liên hệ</h5>
-        <ul>
-          <li>Khu Công nghiệp, TP. Hồ Chí Minh, Việt Nam</li>
-          <li><a href="tel:+84(0)28xxxxxxxx">+84 (0) 28 xxxx xxxx</a></li>
-          <li><a href="mailto:sales@betaratio.com">sales@betaratio.com</a></li>
-        </ul>
+      <div class="footer-hq">
+        <h5>Trụ sở chính</h5>
+        <address>
+          Khu Công nghiệp, TP. Hồ Chí Minh, Việt Nam<br>
+          <a href="tel:+84(0)28xxxxxxxx">+84 (0) 28 xxxx xxxx</a><br>
+          <a href="mailto:sales@betaratio.com">sales@betaratio.com</a>
+        </address>
+        <a href="contact.html" class="btn btn-primary btn-sm">Liên hệ chúng tôi</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year></span> Betaratio. Bảo lưu mọi quyền.</span>
-      <span>Thiết kế lấy cảm hứng kiến trúc thông tin B2B — dữ liệu nội dung nội bộ Betaratio.</span>
+      <div class="legal-links">
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Điều khoản sử dụng</a>
+        <a href="resources.html#certifications">Chứng nhận</a>
+      </div>
     </div>
   </div>
 </footer>

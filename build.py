@@ -10,6 +10,8 @@ static HTML/CSS/JS with no server or build step required to host it
 (e.g. on GitHub Pages). You do not need Python to run the finished site.
 """
 import os
+import re
+import unicodedata
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -190,6 +192,10 @@ def HEADER(active, depth):
       </ul>
     </nav>
     <div class="header-cta">
+      <div class="utility-row">
+        <a class="utility-btn" href="tel:{PHONE.replace(' ', '')}" aria-label="Gọi điện thoại" title="{PHONE}">{icon('phone')}</a>
+        <a class="utility-btn" href="{rel('contact.html', depth)}" aria-label="Gửi yêu cầu báo giá" title="Yêu cầu báo giá">{icon('mail')}</a>
+      </div>
       <a href="{rel('contact.html', depth)}" class="btn btn-primary btn-sm">Yêu cầu báo giá</a>
       <button class="nav-toggle" aria-label="Mở menu">{icon("menu")}</button>
     </div>
@@ -240,18 +246,23 @@ def FOOTER(depth):
           <li><a href="{r('contact.html')}">Liên hệ</a></li>
         </ul>
       </div>
-      <div>
-        <h5>Liên hệ</h5>
-        <ul>
-          <li>{ADDRESS}</li>
-          <li><a href="tel:{PHONE.replace(' ', '')}">{PHONE}</a></li>
-          <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
-        </ul>
+      <div class="footer-hq">
+        <h5>Trụ sở chính</h5>
+        <address>
+          {ADDRESS}<br>
+          <a href="tel:{PHONE.replace(' ', '')}">{PHONE}</a><br>
+          <a href="mailto:{EMAIL}">{EMAIL}</a>
+        </address>
+        <a href="{r('contact.html')}" class="btn btn-primary btn-sm">Liên hệ chúng tôi</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year></span> {SITE_NAME}. Bảo lưu mọi quyền.</span>
-      <span>Thiết kế lấy cảm hứng kiến trúc thông tin B2B — dữ liệu nội dung nội bộ Betaratio.</span>
+      <div class="legal-links">
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Điều khoản sử dụng</a>
+        <a href="{r('resources.html')}#certifications">Chứng nhận</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -270,6 +281,62 @@ def write_page(rel_path, html):
     with open(full, "w", encoding="utf-8") as f:
         f.write(html)
     print("wrote", rel_path)
+
+# =========================================================================
+# REAL PHOTOGRAPHY (optional — drop files into images/photos/, see the
+# README.md in that folder for exact filenames/sizes). Anywhere a slot has
+# no matching file yet, the build falls back to the decorative SVG below.
+# =========================================================================
+PHOTOS_DIR = os.path.join(ROOT, "images", "photos")
+PHOTO_EXTS = (".jpg", ".jpeg", ".png", ".webp")
+
+
+def find_photo(slot):
+    """If images/photos/<slot>.{jpg,jpeg,png,webp} exists, return its
+    root-relative path (e.g. 'images/photos/hero/home-hero.jpg'). Else None."""
+    if not slot:
+        return None
+    for ext in PHOTO_EXTS:
+        if os.path.isfile(os.path.join(PHOTOS_DIR, slot + ext)):
+            return f"images/photos/{slot}{ext}"
+    return None
+
+
+def slugify(name):
+    """ASCII-safe, filename-friendly slug from a (possibly Vietnamese) name."""
+    ascii_name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode("ascii")
+    slug = re.sub(r"[^a-z0-9]+", "-", ascii_name.lower()).strip("-")
+    return slug or "san-pham"
+
+
+def hero_media(depth=0):
+    """Full-bleed hero photo if provided, else the abstract mesh graphic."""
+    photo = find_photo("hero/home-hero")
+    if photo:
+        return (f'<img class="hero-photo" src="{rel(photo, depth)}" '
+                f'alt="Nhà máy sản xuất Betaratio" loading="eager">'
+                f'<div class="hero-photo-scrim"></div>')
+    return hero_art()
+
+
+def product_media(name, ic, depth=1, ar="16/11"):
+    """Product-card thumbnail: real photo if images/photos/products/<slug>
+    exists, else the placeholder icon. `name` is auto-slugified."""
+    photo = find_photo(f"products/{slugify(name)}")
+    if photo:
+        return (f'<div class="img-frame" style="--ar:{ar}">'
+                f'<img src="{rel(photo, depth)}" alt="{name}" loading="lazy"></div>')
+    return f'<div class="img-frame" style="--ar:{ar}">{icon(ic)}</div>'
+
+
+def case_media(ic, slot, depth=0):
+    """Case-study thumbnail: real photo if provided, else placeholder icon."""
+    photo = find_photo(slot)
+    if photo:
+        return (f'<div class="img-frame dark" style="--ar:16/10">'
+                f'<img src="{rel(photo, depth)}" alt="" loading="lazy"></div>')
+    return f'<div class="img-frame dark" style="--ar:16/10">{icon(ic)}</div>'
+
 
 # =========================================================================
 # DECORATIVE SVG BLOCKS (placeholder visuals — swap for real photography)
@@ -302,8 +369,13 @@ def hero_art():
 </div>"""
 
 
-def img_frame(ic, caption, ar="4/3", dark=False):
+def img_frame(ic, caption, ar="4/3", dark=False, slot=None, depth=0):
     darkcls = " dark" if dark else ""
+    photo = find_photo(slot)
+    if photo:
+        return f"""<div class="img-frame{darkcls}" style="--ar:{ar}">
+  <img src="{rel(photo, depth)}" alt="{caption}" loading="lazy">
+</div>"""
     return f"""<div class="img-frame{darkcls}" style="--ar:{ar}">
   {icon(ic)}
   <span class="cap">{caption}</span>
@@ -437,27 +509,38 @@ INDUSTRY_BY_SLUG = {i["slug"]: i for i in INDUSTRIES}
 # =========================================================================
 PRODUCT_MATRIX = [
     dict(name="Lõi lọc Melt-blown", group="Lõi lọc lỏng", app="Lọc sâu tinh / Giữ hạt mịn",
-         industries="Thực phẩm, Dược phẩm, Điện tử", standard="FDA, QCVN 12-1:2011/BYT, NSF 42"),
+         industries="Thực phẩm, Dược phẩm, Điện tử", standard="FDA, QCVN 12-1:2011/BYT, NSF 42",
+         industries_list=["Thực phẩm", "Dược phẩm", "Điện tử"]),
     dict(name="Lõi lọc Sợi quấn", group="Lõi lọc lỏng", app="Lọc thô / Gradient pore",
-         industries="Thực phẩm, Năng lượng, Công nghiệp nặng", standard="QCVN 12-1:2011/BYT, Chịu nhiệt"),
+         industries="Thực phẩm, Năng lượng, Công nghiệp nặng", standard="QCVN 12-1:2011/BYT, Chịu nhiệt",
+         industries_list=["Thực phẩm", "Năng lượng", "Công nghiệp nặng"]),
     dict(name="Lõi lọc Màng xếp nếp (Pleated)", group="Lõi lọc lỏng", app="Lọc tuyệt đối / Tiệt trùng vi sinh",
-         industries="Dược phẩm, Thực phẩm, Điện tử, Công nghệ cao", standard="FDA, EC Food, Chịu Autoclave 121°C"),
+         industries="Dược phẩm, Thực phẩm, Điện tử, Công nghệ cao", standard="FDA, EC Food, Chịu Autoclave 121°C",
+         industries_list=["Dược phẩm", "Thực phẩm", "Điện tử", "Công nghệ cao"]),
     dict(name="Túi lọc lưới EF Series", group="Túi lọc lỏng", app="Lọc bề mặt / Loại hạt không biến dạng",
-         industries="Thực phẩm, Năng lượng", standard="FDA, QCVN 12-1:2011/BYT, Tái sử dụng"),
+         industries="Thực phẩm, Năng lượng", standard="FDA, QCVN 12-1:2011/BYT, Tái sử dụng",
+         industries_list=["Thực phẩm", "Năng lượng"]),
     dict(name="Túi lọc nỉ FF Series", group="Túi lọc lỏng", app="Lọc sâu đa lớp / Hạt mềm lơ lửng",
-         industries="Thực phẩm, Công nghiệp", standard="FDA, QCVN 12-1:2011/BYT, Dung tích cặn lớn"),
+         industries="Thực phẩm, Công nghiệp", standard="FDA, QCVN 12-1:2011/BYT, Dung tích cặn lớn",
+         industries_list=["Thực phẩm", "Công nghiệp"]),
     dict(name="Túi lọc đa sợi MF Series", group="Túi lọc lỏng", app="Lọc lai (bề mặt & sâu)",
-         industries="Thực phẩm, Công nghiệp", standard="FDA, QCVN 12-1:2011/BYT, Bền cơ học"),
+         industries="Thực phẩm, Công nghiệp", standard="FDA, QCVN 12-1:2011/BYT, Bền cơ học",
+         industries_list=["Thực phẩm", "Công nghiệp"]),
     dict(name="Vải lọc máy (Ép khung bản...)", group="Vải lọc máy", app="Tách rắn – lỏng quy mô cực lớn",
-         industries="Năng lượng, Thực phẩm, Công nghiệp nặng", standard="FDA, EC, QCVN, Chịu ứng suất lớn"),
+         industries="Năng lượng, Thực phẩm, Công nghiệp nặng", standard="FDA, EC, QCVN, Chịu ứng suất lớn",
+         industries_list=["Năng lượng", "Thực phẩm", "Công nghiệp nặng"]),
     dict(name="Túi sấy tầng sôi (Fluid Bed)", group="Lọc sấy khí", app="Thu hồi bột mịn / Sấy khô bột",
-         industries="Dược phẩm, Thực phẩm", standard="Chống tĩnh điện Carbon/SS316L, Chống nổ"),
+         industries="Dược phẩm, Thực phẩm", standard="Chống tĩnh điện Carbon/SS316L, Chống nổ",
+         industries_list=["Dược phẩm", "Thực phẩm"]),
     dict(name="Túi lọc thông áp (Vent Bag)", group="Lọc khí", app="Thông gió bồn chứa / Ngừa nhiễm vi sinh",
-         industries="Thực phẩm, Dược phẩm, Công nghệ cao", standard="Cấp lọc siêu mịn, Tránh nhiễm chéo"),
+         industries="Thực phẩm, Dược phẩm, Công nghệ cao", standard="Cấp lọc siêu mịn, Tránh nhiễm chéo",
+         industries_list=["Thực phẩm", "Dược phẩm", "Công nghệ cao"]),
     dict(name="Khớp nối mềm bằng vải", group="Phụ kiện máy", app="Kết nối rung động / Ngừa phát thải bụi",
-         industries="Thực phẩm, Dược phẩm, Công nghệ cao", standard="Cắt laser chuẩn xác, May đo theo máy"),
+         industries="Thực phẩm, Dược phẩm, Công nghệ cao", standard="Cắt laser chuẩn xác, May đo theo máy",
+         industries_list=["Thực phẩm", "Dược phẩm", "Công nghệ cao"]),
     dict(name="Bình lọc chất lỏng (Vessels)", group="Thiết bị vỏ bồn", app="Vỏ chứa túi/lõi lọc áp suất",
-         industries="Tất cả các ngành (Thực phẩm, Điện tử, Dược...)", standard="SS304/SS316/SS316L, Nhựa"),
+         industries="Tất cả các ngành (Thực phẩm, Điện tử, Dược...)", standard="SS304/SS316/SS316L, Nhựa",
+         industries_list=["Thực phẩm", "Dược phẩm", "Điện tử", "Năng lượng", "Công nghiệp nặng", "Công nghiệp", "Công nghệ cao"]),
 ]
 
 # =========================================================================
@@ -466,14 +549,19 @@ PRODUCT_MATRIX = [
 def home_page():
     depth = 0
 
-    industry_cards = ""
+    industry_scroll_cards = ""
     for ind in INDUSTRIES:
         a, b = ind["grad"]
-        industry_cards += f"""<a class="industry-card" {gradient_style(a, b)} href="industries/{ind['slug']}.html">
-      <span class="ic-wrap">{icon(ind['nav_ic'])}</span>
-      <h3>{ind['name']}</h3>
-      <p>{ind['summary']}</p>
-      <span class="tag">Xem giải pháp {icon('arrow-right')}</span>
+        photo = find_photo(f"industries/{ind['slug']}")
+        if photo:
+            isc_media = f'<img src="{rel(photo, depth)}" alt="{ind["name"]}" loading="lazy">'
+            isc_style = ""
+        else:
+            isc_media = icon(ind['nav_ic'])
+            isc_style = gradient_style(a, b)
+        industry_scroll_cards += f"""<a class="industry-scroll-card" href="industries/{ind['slug']}.html">
+      <div class="isc-title">{ind['name']}</div>
+      <div class="isc-photo" {isc_style}>{isc_media}</div>
     </a>\n"""
 
     liquid_products = [
@@ -493,7 +581,7 @@ def home_page():
         cards = ""
         for name, meta, ic in items:
             cards += f"""<div class="product-card">
-        <div class="img-frame" style="--ar:16/11">{icon(ic)}</div>
+        {product_media(name, ic, depth)}
         <div class="pc-body">
           <span class="pc-meta">Sản phẩm tiêu chuẩn</span>
           <h4>{name}</h4>
@@ -505,36 +593,64 @@ def home_page():
       </div>\n"""
         return cards
 
+    hero_slides = [
+        dict(eyebrow="Betaratio Filtration &amp; Separation",
+             h1="Công nghệ lọc và phân tách chuyên sâu: nâng tầm chất lượng, tối ưu chi phí vận hành.",
+             lead="Betaratio thiết kế và gia công các giải pháp lọc &amp; phân tách vừa vặn cho từng thiết bị nhà máy — từ lõi lọc, túi lọc chất lỏng đến túi lọc khí và khớp nối kỹ thuật, đạt chuẩn FDA, ISO 9001:2015 và QCVN.",
+             cta=('Nhận tư vấn giải pháp kỹ thuật', 'contact.html', 'btn-primary'),
+             cta2=('Tải Catalogue 2026', 'resources.html', 'btn-outline')),
+        dict(eyebrow="Custom Engineering / OEM",
+             h1="Không chỉ bán những gì có sẵn — chúng tôi kiến tạo giải pháp vừa vặn nhất cho thiết bị của bạn.",
+             lead="Thiết kế may đo CAD 2D/3D, cắt laser tự động và hàn siêu âm hiện đại — khớp chính xác biên dạng bồn lọc, máy sấy của từng nhà máy.",
+             cta=('Khám phá năng lực OEM/ODM', 'custom-oem.html', 'btn-primary'),
+             cta2=('Yêu cầu thiết kế riêng', 'contact.html', 'btn-outline')),
+        dict(eyebrow="Trust &amp; Compliance",
+             h1="Bảo chứng niềm tin kỹ thuật cho những nhà máy yêu cầu khắt khe nhất.",
+             lead="Đạt chuẩn ISO 9001:2015, SGS FDA 21 CFR và QCVN 12-1:2011/BYT — kiểm định qua phòng thí nghiệm kỹ thuật cao trước khi xuất xưởng.",
+             cta=('Xem chứng nhận tiêu chuẩn', 'resources.html#certifications', 'btn-primary'),
+             cta2=('Về Betaratio', 'about.html', 'btn-outline')),
+    ]
+    hero_slide_html = ""
+    for i, s in enumerate(hero_slides):
+        active = " active" if i == 0 else ""
+        hero_slide_html += f"""<div class="hero-d-slide{active}" data-slide="{i}">
+      <div class="hero-d-media">{hero_media(depth)}</div>
+      <div class="hero-d-panel">
+        <div class="eyebrow">{s['eyebrow']}</div>
+        <h1>{s['h1']}</h1>
+        <p class="lead">{s['lead']}</p>
+        <div class="cta-row">
+          <a href="{s['cta'][1]}" class="btn {s['cta'][2]}">{s['cta'][0]}</a>
+          <a href="{s['cta2'][1]}" class="btn {s['cta2'][2]}">{s['cta2'][0]}</a>
+        </div>
+      </div>
+    </div>\n"""
+    hero_dots = "".join(
+        f'<button class="hero-dot{" active" if i == 0 else ""}" data-goto="{i}" aria-label="Xem slide {i+1}"></button>'
+        for i in range(len(hero_slides))
+    )
+
     body = f"""
-<section class="hero">
-  <div class="container hero-grid">
-    <div>
-      <div class="eyebrow">Betaratio Filtration &amp; Separation</div>
-      <h1>Công nghệ lọc và phân tách chuyên sâu: nâng tầm chất lượng, tối ưu chi phí vận hành.</h1>
-      <p class="lead">Betaratio thiết kế và gia công các giải pháp lọc &amp; phân tách vừa vặn cho từng thiết bị nhà máy — từ lõi lọc, túi lọc chất lỏng đến túi lọc khí và khớp nối kỹ thuật, đạt chuẩn FDA, ISO 9001:2015 và QCVN.</p>
-      <div class="cta-row">
-        <a href="contact.html" class="btn btn-primary">Nhận tư vấn giải pháp kỹ thuật</a>
-        <a href="resources.html" class="btn btn-outline">Tải Catalogue 2026</a>
-      </div>
-      <div class="stat-strip">
-        <div class="stat"><b>11+</b><span>Dòng sản phẩm lọc &amp; phân tách</span></div>
-        <div class="stat"><b>5</b><span>Ngành công nghiệp trọng điểm</span></div>
-        <div class="stat"><b>ISO 9001</b><span>Hệ thống quản lý chất lượng</span></div>
-      </div>
-    </div>
-    <div class="hero-visual">{hero_art()}</div>
-  </div>
+<section class="hero-d" data-hero-carousel>
+  {hero_slide_html}
+  <div class="hero-d-dots">{hero_dots}</div>
 </section>
 
 <section>
   <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow">Lựa chọn theo ngành</div>
-      <h2>Giải pháp chuyên biệt cho từng ngành công nghiệp</h2>
-      <p>Điều hướng đến trang giải pháp phù hợp với bài toán vận hành thực tế của nhà máy bạn chỉ sau một cú click.</p>
+    <div class="carousel-head">
+      <div class="section-head" style="margin-bottom:0">
+        <div class="eyebrow">Lựa chọn theo ngành</div>
+        <h2>Giải pháp cho mọi ngành công nghiệp</h2>
+        <p>Điều hướng đến trang giải pháp phù hợp với bài toán vận hành thực tế của nhà máy bạn chỉ sau một cú click.</p>
+      </div>
+      <div class="carousel-arrows">
+        <button class="carousel-arrow" data-scroll="-1" aria-label="Cuộn trái">{icon('arrow-right', 'rot-180')}</button>
+        <button class="carousel-arrow" data-scroll="1" aria-label="Cuộn phải">{icon('arrow-right')}</button>
+      </div>
     </div>
-    <div class="grid grid-3">
-      {industry_cards}
+    <div class="industry-scroll" data-carousel>
+      {industry_scroll_cards}
     </div>
   </div>
 </section>
@@ -577,7 +693,23 @@ def home_page():
           <a href="custom-oem.html" class="btn btn-navy">Khám phá năng lực OEM/ODM</a>
         </div>
       </div>
-      <div class="col-media">{img_frame('settings', 'Quy trình thiết kế may đo CAD 2D/3D', '4/3.4')}</div>
+      <div class="col-media">{img_frame('settings', 'Quy trình thiết kế may đo CAD 2D/3D', '4/3.4', slot='process/cad-design', depth=depth)}</div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band">
+  <div class="container">
+    <div class="section-head center">
+      <div class="eyebrow">Quy mô &amp; năng lực</div>
+      <h2>Betaratio trong con số</h2>
+      <p>Nền tảng kỹ thuật và dải sản phẩm giúp Betaratio đồng hành cùng nhiều ngành công nghiệp khác nhau.</p>
+    </div>
+    <div class="stats-band-grid">
+      <div class="stat-big"><b>11+</b><span>Dòng sản phẩm lọc &amp; phân tách</span></div>
+      <div class="stat-big"><b>5</b><span>Ngành công nghiệp trọng điểm</span></div>
+      <div class="stat-big"><b>3</b><span>Thiết bị lab kiểm định kỹ thuật cao</span></div>
+      <div class="stat-big"><b>ISO 9001</b><span>Hệ thống quản lý chất lượng</span></div>
     </div>
   </div>
 </section>
@@ -613,36 +745,33 @@ def home_page():
       <h2>Tin tức kỹ thuật &amp; Case Studies</h2>
       <p>Một số bài toán vận hành Betaratio đã cùng đối tác tối ưu — minh họa cho năng lực kỹ thuật thực tế.</p>
     </div>
-    <div class="grid grid-3">
-      <div class="case-card">
-        <div class="img-frame dark" style="--ar:16/10">{icon('wind')}</div>
-        <div class="cc-body">
-          <span class="cc-tag">Dược phẩm</span>
+    <div class="news-list">
+      <div class="news-row">
+        <div><span class="news-date">Dự án tiêu biểu</span><span class="news-tag">Dược phẩm</span></div>
+        <div>
           <h3>Kéo dài tuổi thọ túi sấy tầng sôi</h3>
           <p>Tối ưu cấu trúc sợi và cấp lọc giúp giảm tần suất thay thế túi sấy tầng sôi cho dây chuyền sấy bột dược phẩm.</p>
-          <span class="result">{icon('trending-up')} Giảm chi phí vận hành theo chu kỳ bảo trì</span>
         </div>
       </div>
-      <div class="case-card">
-        <div class="img-frame dark" style="--ar:16/10">{icon('zap')}</div>
-        <div class="cc-body">
-          <span class="cc-tag">Công nghệ cao</span>
+      <div class="news-row">
+        <div><span class="news-date">Dự án tiêu biểu</span><span class="news-tag">Công nghệ cao</span></div>
+        <div>
           <h3>Triệt tiêu tĩnh điện, chống cháy nổ</h3>
           <p>Tích hợp sợi dẫn điện Carbon/SS316L vào túi lọc khí, đưa điện trở bề mặt về ngưỡng an toàn cho khu vực bụi mịn dễ cháy nổ.</p>
-          <span class="result">{icon('trending-up')} Nâng chuẩn an toàn phòng chống cháy nổ</span>
         </div>
       </div>
-      <div class="case-card">
-        <div class="img-frame dark" style="--ar:16/10">{icon('droplet')}</div>
-        <div class="cc-body">
-          <span class="cc-tag">Thực phẩm &amp; Đồ uống</span>
+      <div class="news-row">
+        <div><span class="news-date">Dự án tiêu biểu</span><span class="news-tag">Thực phẩm &amp; Đồ uống</span></div>
+        <div>
           <h3>Loại bỏ hoàn toàn xơ sợi rơi vào sản phẩm</h3>
           <p>Chuyển đổi từ túi may chỉ truyền thống sang túi hàn nhiệt siêu âm (welded seam) cho dây chuyền lọc siro.</p>
-          <span class="result">{icon('trending-up')} Đạt chuẩn vệ sinh an toàn thực phẩm khắt khe hơn</span>
         </div>
       </div>
     </div>
-    <p class="field-note text-center" style="margin-top:18px">Các ví dụ trên minh họa năng lực kỹ thuật của Betaratio; số liệu chi tiết theo từng dự án sẽ được cung cấp khi có yêu cầu báo giá cụ thể.</p>
+    <div class="news-foot">
+      <a href="resources.html" class="btn btn-ghost-navy btn-sm">Xem tất cả tài nguyên kỹ thuật {icon('arrow-right')}</a>
+    </div>
+    <p class="field-note" style="margin-top:14px">Các ví dụ trên minh họa năng lực kỹ thuật của Betaratio; số liệu chi tiết theo từng dự án sẽ được cung cấp khi có yêu cầu báo giá cụ thể.</p>
   </div>
 </section>
 
@@ -672,12 +801,21 @@ def industries_hub_page():
     cards = ""
     for ind in INDUSTRIES:
         a, b = ind["grad"]
-        cards += f"""<a class="industry-card" {gradient_style(a, b)} href="{ind['slug']}.html" style="min-height:300px">
-      <span class="ic-wrap">{icon(ind['nav_ic'])}</span>
-      <h3>{ind['name']}</h3>
-      <p>{ind['summary']}</p>
-      <span class="tag">Xem giải pháp chi tiết {icon('arrow-right')}</span>
-    </a>\n""".replace(f'href="{ind["slug"]}.html"', f'href="industries/{ind["slug"]}.html"')
+        photo = find_photo(f"industries/{ind['slug']}")
+        if photo:
+            isc_media = f'<img src="{rel(photo, depth)}" alt="{ind["name"]}" loading="lazy">'
+            isc_style = ""
+        else:
+            isc_media = icon(ind['nav_ic'])
+            isc_style = gradient_style(a, b)
+        cards += f"""<a class="industry-scroll-card" href="industries/{ind['slug']}.html" style="flex-basis:auto">
+      <div class="isc-title">{ind['name']}</div>
+      <div class="isc-photo" {isc_style}>{isc_media}</div>
+      <div style="padding:16px 18px">
+        <p style="margin:0;font-size:13.5px">{ind['summary']}</p>
+        <span class="tag" style="color:var(--teal-600);font-weight:700;display:inline-flex;gap:6px;align-items:center;margin-top:10px">Xem giải pháp {icon('arrow-right')}</span>
+      </div>
+    </a>\n"""
 
     body = f"""
 <section class="page-hero">
@@ -727,7 +865,7 @@ def industry_page(ind):
     prod_cards = ""
     for name, desc, ic in ind["products"]:
         prod_cards += f"""<div class="product-card">
-      <div class="img-frame" style="--ar:16/11">{icon(ic)}</div>
+      {product_media(name, ic, depth)}
       <div class="pc-body">
         <span class="pc-meta">Sản phẩm đề xuất</span>
         <h4>{name}</h4>
@@ -822,9 +960,15 @@ def industry_page(ind):
 def products_hub_page():
     depth = 1  # lives at products/index.html
 
+    matrix_groups = sorted({row['group'] for row in PRODUCT_MATRIX})
+    matrix_industries = sorted({ind for row in PRODUCT_MATRIX for ind in row['industries_list']})
+    group_options = "".join(f'<option value="{g}">{g}</option>' for g in matrix_groups)
+    industry_options = "".join(f'<option value="{i}">{i}</option>' for i in matrix_industries)
+
     matrix_rows = ""
     for row in PRODUCT_MATRIX:
-        matrix_rows += f"""<tr>
+        inds = "|".join(row['industries_list'])
+        matrix_rows += f"""<tr data-mgroup="{row['group']}" data-minds="{inds}">
       <td><strong>{row['name']}</strong></td>
       <td>{row['group']}</td>
       <td>{row['app']}</td>
@@ -864,15 +1008,33 @@ def products_hub_page():
 <section class="section-alt">
   <div class="container">
     <div class="section-head">
-      <div class="eyebrow">Ma trận phân loại sản phẩm</div>
-      <h2>Bảng dữ liệu phân loại sản phẩm Betaratio</h2>
+      <div class="eyebrow">Phân loại sản phẩm</div>
       <p>Tra cứu nhanh theo nhóm thiết bị, ứng dụng lọc, ngành công nghiệp phù hợp và tiêu chuẩn chất lượng cốt lõi.</p>
     </div>
+    <div class="matrix-filter-bar" data-matrix-filter>
+      <div class="mf-select">
+        <label for="mf-group">Nhóm thiết bị</label>
+        <select id="mf-group" data-mf="group">
+          <option value="">Tất cả nhóm thiết bị</option>
+          {group_options}
+        </select>
+      </div>
+      <div class="mf-select">
+        <label for="mf-industry">Ngành phù hợp</label>
+        <select id="mf-industry" data-mf="industry">
+          <option value="">Tất cả ngành</option>
+          {industry_options}
+        </select>
+      </div>
+      <button type="button" class="btn btn-ghost-navy btn-sm" data-mf-reset>Xóa bộ lọc</button>
+      <span class="mf-count"><strong data-mf-count>{len(PRODUCT_MATRIX)}</strong> / {len(PRODUCT_MATRIX)} sản phẩm</span>
+    </div>
     <div class="table-wrap">
-      <table class="matrix">
+      <table class="matrix" data-mf-table>
         <thead><tr><th>Tên sản phẩm</th><th>Nhóm thiết bị</th><th>Ứng dụng lọc</th><th>Ngành phù hợp</th><th>Tiêu chuẩn cốt lõi</th></tr></thead>
         <tbody>{matrix_rows}</tbody>
       </table>
+      <p class="mf-empty" data-mf-empty style="display:none">Không tìm thấy sản phẩm phù hợp với bộ lọc đã chọn.</p>
     </div>
   </div>
 </section>
@@ -909,10 +1071,10 @@ def filter_sidebar(scope_id, groups, result_default):
     return html
 
 
-def product_card(name, meta, desc, spec, ic, data_attrs):
+def product_card(name, meta, desc, spec, ic, data_attrs, depth=1):
     attrs = " ".join(f'data-{k}="{v}"' for k, v in data_attrs.items())
     return f"""<div class="product-card" data-card {attrs}>
-  <div class="img-frame" style="--ar:16/11">{icon(ic)}</div>
+  {product_media(name, ic, depth)}
   <div class="pc-body">
     <span class="pc-meta">{meta}</span>
     <h4>{name}</h4>
@@ -1181,7 +1343,7 @@ def custom_oem_page():
 <section class="section-alt">
   <div class="container">
     <div class="feature-row">
-      <div class="col-media">{img_frame('scissors', 'Máy cắt Laser tự động', '4/3.4', True)}</div>
+      <div class="col-media">{img_frame('scissors', 'Máy cắt Laser tự động', '4/3.4', True, slot='process/laser-cutting', depth=depth)}</div>
       <div class="col-text">
         <div class="eyebrow">Công nghệ sản xuất tiên tiến</div>
         <h2>Máy cắt Laser tự động</h2>
@@ -1198,7 +1360,7 @@ def custom_oem_page():
 <section>
   <div class="container">
     <div class="feature-row reverse">
-      <div class="col-media">{img_frame('zap', 'Máy hàn siêu âm & hàn nhiệt', '4/3.4', True)}</div>
+      <div class="col-media">{img_frame('zap', 'Máy hàn siêu âm & hàn nhiệt', '4/3.4', True, slot='process/ultrasonic-welding', depth=depth)}</div>
       <div class="col-text">
         <div class="eyebrow">Công nghệ sản xuất tiên tiến</div>
         <h2>Máy hàn siêu âm &amp; hàn nhiệt hiện đại</h2>
@@ -1346,7 +1508,7 @@ def resources_page():
     </div>
     <div class="grid grid-3">
       <div class="case-card">
-        <div class="img-frame dark" style="--ar:16/10">{icon('wind')}</div>
+        {case_media('wind', 'case-studies/case-1-pharma-fluidbed', depth)}
         <div class="cc-body">
           <span class="cc-tag">Dược phẩm</span>
           <h3>Kéo dài tuổi thọ túi sấy tầng sôi</h3>
@@ -1354,7 +1516,7 @@ def resources_page():
         </div>
       </div>
       <div class="case-card">
-        <div class="img-frame dark" style="--ar:16/10">{icon('zap')}</div>
+        {case_media('zap', 'case-studies/case-2-hightech-esd', depth)}
         <div class="cc-body">
           <span class="cc-tag">Công nghệ cao</span>
           <h3>Triệt tiêu tĩnh điện, chống cháy nổ</h3>
@@ -1362,7 +1524,7 @@ def resources_page():
         </div>
       </div>
       <div class="case-card">
-        <div class="img-frame dark" style="--ar:16/10">{icon('droplet')}</div>
+        {case_media('droplet', 'case-studies/case-3-food-welded-seam', depth)}
         <div class="cc-body">
           <span class="cc-tag">Thực phẩm &amp; Đồ uống</span>
           <h3>Loại bỏ xơ sợi rơi vào sản phẩm</h3>
@@ -1511,7 +1673,8 @@ def contact_page():
       <div class="form-card">
         <h3 style="margin-bottom:6px">Gửi yêu cầu báo giá (RFQ)</h3>
         <p class="field-note" style="margin-bottom:22px">Điền càng chi tiết, đội ngũ kỹ thuật càng phản hồi nhanh và chính xác.</p>
-        <form data-rfq-form>
+        <form data-rfq-form action="https://formspree.io/f/maeyjzpg" method="POST">
+          <input type="hidden" name="_subject" value="Yêu cầu báo giá (RFQ) — Website Betaratio">
           <div class="form-row">
             <div class="field"><label>Họ và tên *</label><input type="text" name="name" required placeholder="Nguyễn Văn A"></div>
             <div class="field"><label>Tên công ty *</label><input type="text" name="company" required placeholder="Công ty TNHH ..."></div>
@@ -1552,10 +1715,10 @@ def contact_page():
           <div class="field">
             <label>Đính kèm bản vẽ / mẫu (tùy chọn)</label>
             <input type="file" name="attachment">
-            <p class="field-note">Kết nối trường này với dịch vụ backend (Formspree, Google Form, email API...) trước khi triển khai thực tế — xem README.md.</p>
+            <p class="field-note">Tối đa 10MB/tệp — file gửi kèm sẽ đến trực tiếp email đội ngũ kỹ thuật cùng yêu cầu báo giá.</p>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Gửi yêu cầu báo giá {icon('arrow-right')}</button>
-          <p data-form-note style="display:none;margin-top:14px;padding:12px 14px;background:#eefaf7;border:1px solid #c7ece7;border-radius:8px;color:var(--teal-600);font-size:13.5px;font-weight:600"></p>
+          <button type="submit" class="btn btn-primary btn-block" data-rfq-submit>Gửi yêu cầu báo giá {icon('arrow-right')}</button>
+          <p data-form-note style="display:none;margin-top:14px;padding:12px 14px;border-radius:8px;font-size:13.5px;font-weight:600"></p>
         </form>
       </div>
 
@@ -1657,6 +1820,10 @@ def main():
     os.makedirs(os.path.join(ROOT, "images"), exist_ok=True)
     with open(os.path.join(ROOT, "images", "favicon.svg"), "w", encoding="utf-8") as f:
         f.write(favicon_svg())
+
+    # Keep the real-photo drop folders around even on a fresh build.
+    for sub in ("hero", "industries", "process", "case-studies", "products"):
+        os.makedirs(os.path.join(PHOTOS_DIR, sub), exist_ok=True)
 
     all_paths = ["index.html", "industries.html", "products/index.html",
                  "products/liquid-filtration.html", "products/gas-separation.html",
