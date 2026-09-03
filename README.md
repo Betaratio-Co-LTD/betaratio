@@ -36,6 +36,17 @@ betaratio-website/
 
 Toàn bộ hình ảnh trong site hiện là **đồ họa minh họa/placeholder** (icon SVG, khối gradient) — xem mục 4 để thay bằng ảnh thật.
 
+```
+├── images/
+│   ├── favicon.svg
+│   └── photos/                    ← BỎ ẢNH THẬT VÀO ĐÂY (xem mục 4)
+│       ├── hero/
+│       ├── industries/
+│       ├── process/
+│       ├── case-studies/
+│       └── products/
+```
+
 ## 2. Xem thử trên máy trước khi đưa lên mạng
 
 Không cần cài gì thêm, chỉ cần một static server đơn giản:
@@ -77,7 +88,27 @@ python3 -m http.server 8000
 
 > Lưu ý: GitHub web upload không giữ được cấu trúc thư mục nếu bạn kéo cả thư mục `betaratio-website` — hãy mở thư mục ra và kéo các file/thư mục con bên trong.
 
-## 4. Bật GitHub Pages (để có link website công khai)
+## 4. Thêm ảnh thật (thay icon minh họa, không cần sửa code)
+
+Thư mục `images/photos/` đã dựng sẵn cho bạn 5 nhóm ảnh, mỗi nhóm có file `README.md` (hoặc `PRODUCT_LIST.txt`) liệt kê **chính xác tên file** cần dùng và mô tả nội dung nên chụp:
+
+| Thư mục | Số ảnh | Dùng ở đâu |
+|---|---|---|
+| `images/photos/hero/` | 1 | Ảnh banner lớn trang chủ |
+| `images/photos/industries/` | 5 | Ảnh đại diện từng ngành (trang chủ + trang "Ngành công nghiệp") |
+| `images/photos/process/` | 3 | Ảnh quy trình sản xuất/gia công |
+| `images/photos/case-studies/` | 3 | Ảnh minh họa case study (trang "Tài nguyên kỹ thuật") |
+| `images/photos/products/` | tùy chọn, tối đa 36 | Ảnh từng sản phẩm trên các thẻ sản phẩm nhỏ |
+
+**Cách dùng:** đặt file ảnh (`.jpg`/`.jpeg`/`.png`/`.webp`) đúng tên đã ghi trong `README.md` của từng thư mục con, rồi chạy lại:
+
+```bash
+python3 build.py
+```
+
+Trang nào có ảnh khớp tên sẽ tự động hiển thị ảnh thật; vị trí nào chưa có ảnh vẫn giữ nguyên icon minh họa — không cần thêm đủ 100% mới build được. Xem `images/photos/README.md` để biết tổng quan đầy đủ.
+
+## 5. Bật GitHub Pages (để có link website công khai)
 
 1. Vào repo trên GitHub → tab **Settings** → mục **Pages** (menu bên trái).
 2. Ở **Source**, chọn nhánh `main`, thư mục `/ (root)` → bấm **Save**.
@@ -85,20 +116,20 @@ python3 -m http.server 8000
    `https://<ten-tai-khoan>.github.io/<ten-repo>/`
 4. (Tùy chọn) Nếu có domain riêng (vd. `betaratio.com`), thêm file `CNAME` chứa domain đó vào repo và cấu hình DNS trỏ về GitHub Pages theo [hướng dẫn chính thức](https://docs.github.com/vi/pages/configuring-a-custom-domain-for-your-github-pages-site).
 
-## 5. Việc cần làm trước khi vận hành chính thức (checklist)
+## 6. Việc cần làm trước khi vận hành chính thức (checklist)
 
 Site hiện dùng dữ liệu và thông tin liên hệ **mẫu** — cần cập nhật trước khi công khai với khách hàng thật:
 
 - [ ] Thay số điện thoại, email, địa chỉ thật trong `build.py` (đầu file, các biến `PHONE`, `EMAIL`, `ADDRESS`) rồi chạy lại `python3 build.py`, **hoặc** tìm–thay trực tiếp trong các file `.html` nếu không dùng Python.
 - [ ] Thay `SITE_DOMAIN_PLACEHOLDER` trong `build.py` (hoặc trực tiếp trong `robots.txt`, `sitemap.xml`, thẻ `<link rel="canonical">` mỗi trang) bằng domain thật.
-- [ ] Kết nối form "Yêu cầu báo giá" (`contact.html`) với dịch vụ nhận email thật — ví dụ [Formspree](https://formspree.io), Google Forms, hoặc API backend riêng. Hiện tại form chỉ hiển thị thông báo xác nhận trên trình duyệt (xem `js/main.js`, phần `data-rfq-form`) và **chưa gửi dữ liệu đi đâu cả**.
-- [ ] Thay ảnh minh họa/placeholder (icon, khối gradient) bằng ảnh thật: sản phẩm, nhà máy, dây chuyền sản xuất.
+- [x] Form "Yêu cầu báo giá" (`contact.html`) đã kết nối với [Formspree](https://formspree.io) (endpoint `https://formspree.io/f/maeyjzpg`) — gửi bằng AJAX (`fetch`), không rời trang, hiển thị thông báo thành công/lỗi ngay trên form (xem `js/main.js`, phần `data-rfq-form`). **Cần làm thêm:** vào [dashboard Formspree](https://formspree.io/forms) xác nhận email nhận (lần gửi đầu tiên Formspree sẽ yêu cầu xác thực), và kiểm tra giới hạn số lượt gửi/tháng của gói đang dùng phù hợp với lượng RFQ thực tế.
+- [ ] Thay ảnh minh họa/placeholder (icon, khối gradient) bằng ảnh thật: sản phẩm, nhà máy, dây chuyền sản xuất — xem mục 4 "Thêm ảnh thật".
 - [ ] Nhúng Google Maps thật vào khung bản đồ ở `contact.html` (tìm dòng `<span class="cap">Bản đồ vị trí...`).
 - [ ] Xác minh lại số liệu trong mục "Case Studies" (trang chủ và `resources.html`) bằng dữ liệu dự án thật đã được khách hàng đồng ý công bố.
 - [ ] Tải file catalogue/datasheet PDF thật lên và cập nhật liên kết ở `resources.html` (hiện đang là liên kết `#` giữ chỗ).
 - [ ] Đính kèm bản sao chứng chỉ ISO 9001:2015 / FDA / QCVN thật (nếu muốn cho tải trực tiếp).
 
-## 6. Sửa nội dung sau này
+## 7. Sửa nội dung sau này
 
 - Với thay đổi nhỏ (sửa câu chữ, giá, thông tin liên hệ): sửa trực tiếp trong file `.html` tương ứng bằng bất kỳ trình soạn thảo nào (VS Code, Notepad++...).
 - Với thay đổi lặp lại trên nhiều trang (vd. đổi toàn bộ menu, thêm ngành công nghiệp mới, sửa số điện thoại ở mọi trang): sửa dữ liệu trong `build.py` rồi chạy `python3 build.py` để sinh lại toàn bộ trang — cách này nhanh và tránh sai sót khi phải sửa tay hàng chục file.

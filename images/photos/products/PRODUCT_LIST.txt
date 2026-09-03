@@ -1,0 +1,40 @@
+Danh sách 36 thẻ sản phẩm trên toàn site — đặt tên file ảnh CHÍNH XÁC theo cột bên trái.
+Định dạng: .jpg / .jpeg / .png / .webp (chỉ cần 1 trong các định dạng này).
+Tỷ lệ khung hình 16:11, khuyến nghị tối thiểu 640x440px, ảnh sản phẩm chụp nền trung tính/trắng.
+
+binh-loc-a-tui-cong-nghiep.jpg  ←  Bình lọc đa túi công nghiệp
+binh-loc-a-tui-cong-nghiep-multi-bag.jpg  ←  Bình lọc đa túi công nghiệp (Multi-bag)
+binh-loc-chat-long.jpg  ←  Bình lọc chất lỏng
+binh-loc-on-tui-loi.jpg  ←  Bình lọc đơn túi/lõi
+khop-noi-mem-bang-vai.jpg  ←  Khớp nối mềm bằng vải
+khop-noi-mem-bang-vai-ky-thuat.jpg  ←  Khớp nối mềm bằng vải kỹ thuật
+loi-loc-cot-loc.jpg  ←  Lõi lọc / Cột lọc
+loi-loc-mang-xep-nep-absolute.jpg  ←  Lõi lọc màng xếp nếp Absolute
+loi-loc-mang-xep-nep-pleated.jpg  ←  Lõi lọc Màng xếp nếp (Pleated)
+loi-loc-melt-blown.jpg  ←  Lõi lọc Melt-blown
+loi-loc-melt-blown-sieu-min.jpg  ←  Lõi lọc Melt-blown siêu mịn
+loi-loc-pleated-membrane-ptfe-pes.jpg  ←  Lõi lọc Pleated Membrane PTFE/PES
+loi-loc-soi-quan-cotton-thuy-tinh.jpg  ←  Lõi lọc sợi quấn Cotton/Thủy tinh
+loi-loc-soi-quan-string-wound.jpg  ←  Lõi lọc Sợi quấn (String Wound)
+loi-loc-xep-nep-pleated.jpg  ←  Lõi lọc xếp nếp (Pleated)
+tui-loc-a-soi-mf-series.jpg  ←  Túi lọc đa sợi MF Series
+tui-loc-bui-thu-hoi-bot-min.jpg  ←  Túi lọc bụi & thu hồi bột mịn
+tui-loc-dung-dich-long.jpg  ←  Túi lọc dung dịch lỏng
+tui-loc-ef-mesh.jpg  ←  Túi lọc EF Mesh
+tui-loc-luoi-ef-series.jpg  ←  Túi lọc lưới EF Series
+tui-loc-ni-ff-series.jpg  ←  Túi lọc nỉ FF Series
+tui-loc-thong-ap-phong-sach.jpg  ←  Túi lọc thông áp phòng sạch
+tui-loc-thong-ap-vent-bag.jpg  ←  Túi lọc thông áp (Vent Bag)
+tui-loc-thong-ap-vo-trung-bon-chua.jpg  ←  Túi lọc thông áp vô trùng bồn chứa
+tui-say-tang-soi.jpg  ←  Túi sấy tầng sôi
+tui-say-tang-soi-chong-tinh-ien.jpg  ←  Túi sấy tầng sôi chống tĩnh điện
+tui-say-tang-soi-soi-carbon.jpg  ←  Túi sấy tầng sôi — Sợi Carbon
+tui-say-tang-soi-soi-ss316l.jpg  ←  Túi sấy tầng sôi — Sợi SS316L
+tui-thong-ap-bon-chua.jpg  ←  Túi thông áp bồn chứa
+tui-thu-hoi-bui-carbon.jpg  ←  Túi thu hồi bụi Carbon
+vai-loc-may-cong-nghiep.jpg  ←  Vải lọc máy công nghiệp
+vai-loc-may-ep-khung-ban.jpg  ←  Vải lọc máy ép khung bản
+vai-loc-may-ep-khung-ban-nang.jpg  ←  Vải lọc máy ép khung bản nặng
+vai-loc-may-ep-khung-ban-thuc-pham.jpg  ←  Vải lọc máy ép khung bản thực phẩm
+vai-loc-may-ly-tam-centrifuge-cloth.jpg  ←  Vải lọc máy ly tâm (Centrifuge Cloth)
+vo-binh-loc-inox-ss316l-mirror-polish.jpg  ←  Vỏ bình lọc inox SS316L Mirror Polish

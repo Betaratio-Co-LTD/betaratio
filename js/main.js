@@ -98,20 +98,88 @@
     apply();
   });
 
-  /* ---------- Contact / RFQ form (static-site friendly demo handler) ---------- */
+  /* ---------- Product matrix dropdown filter ---------- */
+  document.querySelectorAll("[data-matrix-filter]").forEach(function (bar) {
+    var selects = bar.querySelectorAll("select[data-mf]");
+    var resetBtn = bar.querySelector("[data-mf-reset]");
+    var countEl = bar.querySelector("[data-mf-count]");
+    var wrap = bar.parentElement;
+    var table = wrap ? wrap.querySelector("[data-mf-table]") : null;
+    var emptyEl = wrap ? wrap.querySelector("[data-mf-empty]") : null;
+    if (!table) return;
+    var rows = table.querySelectorAll("tbody tr");
+
+    function apply() {
+      var groupSel = bar.querySelector('[data-mf="group"]');
+      var indSel = bar.querySelector('[data-mf="industry"]');
+      var groupVal = groupSel ? groupSel.value : "";
+      var indVal = indSel ? indSel.value : "";
+      var visible = 0;
+      rows.forEach(function (row) {
+        var rowGroup = row.dataset.mgroup || "";
+        var rowInds = (row.dataset.minds || "").split("|");
+        var show = true;
+        if (groupVal && rowGroup !== groupVal) show = false;
+        if (indVal && rowInds.indexOf(indVal) === -1) show = false;
+        row.style.display = show ? "" : "none";
+        if (show) visible++;
+      });
+      if (countEl) countEl.textContent = visible;
+      table.style.display = visible === 0 ? "none" : "";
+      if (emptyEl) emptyEl.style.display = visible === 0 ? "" : "none";
+    }
+
+    selects.forEach(function (sel) { sel.addEventListener("change", apply); });
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        selects.forEach(function (sel) { sel.value = ""; });
+        apply();
+      });
+    }
+    apply();
+  });
+
+  /* ---------- Contact / RFQ form (submits to Formspree via AJAX) ---------- */
   var rfqForm = document.querySelector("[data-rfq-form]");
   if (rfqForm) {
+    var rfqSubmitBtn = rfqForm.querySelector("[data-rfq-submit]");
+    var rfqSubmitLabel = rfqSubmitBtn ? rfqSubmitBtn.innerHTML : "";
+
+    function showNote(msg, ok) {
+      var note = rfqForm.querySelector("[data-form-note]");
+      if (!note) return;
+      note.textContent = msg;
+      note.style.display = "block";
+      note.style.background = ok ? "#eefaf7" : "#fdecec";
+      note.style.border = "1px solid " + (ok ? "#c7ece7" : "#f3c6c6");
+      note.style.color = ok ? "var(--teal-600)" : "#c0392b";
+    }
+
     rfqForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      var note = rfqForm.querySelector("[data-form-note]");
-      if (note) {
-        note.textContent = "Cảm ơn bạn! Yêu cầu đã được ghi nhận. Đội ngũ kỹ thuật Betaratio sẽ liên hệ trong vòng 24 giờ làm việc.";
-        note.style.display = "block";
-      }
-      rfqForm.reset();
-      /* NOTE: Connect this form to your email service / backend
-         (e.g. Formspree, Google Forms, or a serverless function)
-         before going live — see README.md for instructions. */
+      if (rfqSubmitBtn) { rfqSubmitBtn.disabled = true; rfqSubmitBtn.textContent = "Đang gửi..."; }
+
+      fetch(rfqForm.action, {
+        method: "POST",
+        body: new FormData(rfqForm),
+        headers: { "Accept": "application/json" }
+      }).then(function (response) {
+        if (response.ok) {
+          showNote("Cảm ơn bạn! Yêu cầu đã được gửi thành công. Đội ngũ kỹ thuật Betaratio sẽ liên hệ trong vòng 24 giờ làm việc.", true);
+          rfqForm.reset();
+        } else {
+          return response.json().then(function (data) {
+            var msg = (data && data.errors && data.errors.length) ?
+              data.errors.map(function (er) { return er.message; }).join(", ") :
+              "Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ trực tiếp qua email/điện thoại bên dưới.";
+            showNote(msg, false);
+          });
+        }
+      }).catch(function () {
+        showNote("Không thể kết nối tới máy chủ gửi yêu cầu. Vui lòng thử lại hoặc liên hệ trực tiếp qua email/điện thoại bên dưới.", false);
+      }).finally(function () {
+        if (rfqSubmitBtn) { rfqSubmitBtn.disabled = false; rfqSubmitBtn.innerHTML = rfqSubmitLabel; }
+      });
     });
   }
 
@@ -125,5 +193,44 @@
   /* ---------- Set current year in footer ---------- */
   document.querySelectorAll("[data-year]").forEach(function (el) {
     el.textContent = new Date().getFullYear();
+  });
+
+  /* ---------- Hero carousel (diagonal split, auto-rotate + dots) ---------- */
+  document.querySelectorAll("[data-hero-carousel]").forEach(function (hero) {
+    var slides = hero.querySelectorAll(".hero-d-slide");
+    var dots = hero.querySelectorAll(".hero-dot");
+    if (slides.length < 2) return;
+    var current = 0;
+    var timer;
+
+    function show(i) {
+      current = (i + slides.length) % slides.length;
+      slides.forEach(function (s, idx) { s.classList.toggle("active", idx === current); });
+      dots.forEach(function (d, idx) { d.classList.toggle("active", idx === current); });
+    }
+    function next() { show(current + 1); }
+    function restart() {
+      clearInterval(timer);
+      timer = setInterval(next, 6500);
+    }
+    dots.forEach(function (dot) {
+      dot.addEventListener("click", function () {
+        show(parseInt(dot.dataset.goto, 10));
+        restart();
+      });
+    });
+    restart();
+  });
+
+  /* ---------- Horizontal carousel scroll arrows (industry strip) ---------- */
+  document.querySelectorAll(".carousel-head").forEach(function (head) {
+    var track = head.parentElement.querySelector("[data-carousel]");
+    if (!track) return;
+    head.querySelectorAll("[data-scroll]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var dir = parseInt(btn.dataset.scroll, 10);
+        track.scrollBy({ left: dir * 260, behavior: "smooth" });
+      });
+    });
   });
 })();

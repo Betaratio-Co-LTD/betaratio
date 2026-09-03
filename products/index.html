@@ -53,6 +53,10 @@
       </ul>
     </nav>
     <div class="header-cta">
+      <div class="utility-row">
+        <a class="utility-btn" href="tel:+84(0)28xxxxxxxx" aria-label="Gọi điện thoại" title="+84 (0) 28 xxxx xxxx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></a>
+        <a class="utility-btn" href="../contact.html" aria-label="Gửi yêu cầu báo giá" title="Yêu cầu báo giá"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a>
+      </div>
       <a href="../contact.html" class="btn btn-primary btn-sm">Yêu cầu báo giá</a>
       <button class="nav-toggle" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
     </div>
@@ -91,84 +95,101 @@
 <section class="section-alt">
   <div class="container">
     <div class="section-head">
-      <div class="eyebrow">Ma trận phân loại sản phẩm</div>
-      <h2>Bảng dữ liệu phân loại sản phẩm Betaratio</h2>
+      <div class="eyebrow">Phân loại sản phẩm</div>
       <p>Tra cứu nhanh theo nhóm thiết bị, ứng dụng lọc, ngành công nghiệp phù hợp và tiêu chuẩn chất lượng cốt lõi.</p>
     </div>
+    <div class="matrix-filter-bar" data-matrix-filter>
+      <div class="mf-select">
+        <label for="mf-group">Nhóm thiết bị</label>
+        <select id="mf-group" data-mf="group">
+          <option value="">Tất cả nhóm thiết bị</option>
+          <option value="Lõi lọc lỏng">Lõi lọc lỏng</option><option value="Lọc khí">Lọc khí</option><option value="Lọc sấy khí">Lọc sấy khí</option><option value="Phụ kiện máy">Phụ kiện máy</option><option value="Thiết bị vỏ bồn">Thiết bị vỏ bồn</option><option value="Túi lọc lỏng">Túi lọc lỏng</option><option value="Vải lọc máy">Vải lọc máy</option>
+        </select>
+      </div>
+      <div class="mf-select">
+        <label for="mf-industry">Ngành phù hợp</label>
+        <select id="mf-industry" data-mf="industry">
+          <option value="">Tất cả ngành</option>
+          <option value="Công nghiệp">Công nghiệp</option><option value="Công nghiệp nặng">Công nghiệp nặng</option><option value="Công nghệ cao">Công nghệ cao</option><option value="Dược phẩm">Dược phẩm</option><option value="Năng lượng">Năng lượng</option><option value="Thực phẩm">Thực phẩm</option><option value="Điện tử">Điện tử</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-ghost-navy btn-sm" data-mf-reset>Xóa bộ lọc</button>
+      <span class="mf-count"><strong data-mf-count>11</strong> / 11 sản phẩm</span>
+    </div>
     <div class="table-wrap">
-      <table class="matrix">
+      <table class="matrix" data-mf-table>
         <thead><tr><th>Tên sản phẩm</th><th>Nhóm thiết bị</th><th>Ứng dụng lọc</th><th>Ngành phù hợp</th><th>Tiêu chuẩn cốt lõi</th></tr></thead>
-        <tbody><tr>
+        <tbody><tr data-mgroup="Lõi lọc lỏng" data-minds="Thực phẩm|Dược phẩm|Điện tử">
       <td><strong>Lõi lọc Melt-blown</strong></td>
       <td>Lõi lọc lỏng</td>
       <td>Lọc sâu tinh / Giữ hạt mịn</td>
       <td>Thực phẩm, Dược phẩm, Điện tử</td>
       <td>FDA, QCVN 12-1:2011/BYT, NSF 42</td>
     </tr>
-<tr>
+<tr data-mgroup="Lõi lọc lỏng" data-minds="Thực phẩm|Năng lượng|Công nghiệp nặng">
       <td><strong>Lõi lọc Sợi quấn</strong></td>
       <td>Lõi lọc lỏng</td>
       <td>Lọc thô / Gradient pore</td>
       <td>Thực phẩm, Năng lượng, Công nghiệp nặng</td>
       <td>QCVN 12-1:2011/BYT, Chịu nhiệt</td>
     </tr>
-<tr>
+<tr data-mgroup="Lõi lọc lỏng" data-minds="Dược phẩm|Thực phẩm|Điện tử|Công nghệ cao">
       <td><strong>Lõi lọc Màng xếp nếp (Pleated)</strong></td>
       <td>Lõi lọc lỏng</td>
       <td>Lọc tuyệt đối / Tiệt trùng vi sinh</td>
       <td>Dược phẩm, Thực phẩm, Điện tử, Công nghệ cao</td>
       <td>FDA, EC Food, Chịu Autoclave 121°C</td>
     </tr>
-<tr>
+<tr data-mgroup="Túi lọc lỏng" data-minds="Thực phẩm|Năng lượng">
       <td><strong>Túi lọc lưới EF Series</strong></td>
       <td>Túi lọc lỏng</td>
       <td>Lọc bề mặt / Loại hạt không biến dạng</td>
       <td>Thực phẩm, Năng lượng</td>
       <td>FDA, QCVN 12-1:2011/BYT, Tái sử dụng</td>
     </tr>
-<tr>
+<tr data-mgroup="Túi lọc lỏng" data-minds="Thực phẩm|Công nghiệp">
       <td><strong>Túi lọc nỉ FF Series</strong></td>
       <td>Túi lọc lỏng</td>
       <td>Lọc sâu đa lớp / Hạt mềm lơ lửng</td>
       <td>Thực phẩm, Công nghiệp</td>
       <td>FDA, QCVN 12-1:2011/BYT, Dung tích cặn lớn</td>
     </tr>
-<tr>
+<tr data-mgroup="Túi lọc lỏng" data-minds="Thực phẩm|Công nghiệp">
       <td><strong>Túi lọc đa sợi MF Series</strong></td>
       <td>Túi lọc lỏng</td>
       <td>Lọc lai (bề mặt & sâu)</td>
       <td>Thực phẩm, Công nghiệp</td>
       <td>FDA, QCVN 12-1:2011/BYT, Bền cơ học</td>
     </tr>
-<tr>
+<tr data-mgroup="Vải lọc máy" data-minds="Năng lượng|Thực phẩm|Công nghiệp nặng">
       <td><strong>Vải lọc máy (Ép khung bản...)</strong></td>
       <td>Vải lọc máy</td>
       <td>Tách rắn – lỏng quy mô cực lớn</td>
       <td>Năng lượng, Thực phẩm, Công nghiệp nặng</td>
       <td>FDA, EC, QCVN, Chịu ứng suất lớn</td>
     </tr>
-<tr>
+<tr data-mgroup="Lọc sấy khí" data-minds="Dược phẩm|Thực phẩm">
       <td><strong>Túi sấy tầng sôi (Fluid Bed)</strong></td>
       <td>Lọc sấy khí</td>
       <td>Thu hồi bột mịn / Sấy khô bột</td>
       <td>Dược phẩm, Thực phẩm</td>
       <td>Chống tĩnh điện Carbon/SS316L, Chống nổ</td>
     </tr>
-<tr>
+<tr data-mgroup="Lọc khí" data-minds="Thực phẩm|Dược phẩm|Công nghệ cao">
       <td><strong>Túi lọc thông áp (Vent Bag)</strong></td>
       <td>Lọc khí</td>
       <td>Thông gió bồn chứa / Ngừa nhiễm vi sinh</td>
       <td>Thực phẩm, Dược phẩm, Công nghệ cao</td>
       <td>Cấp lọc siêu mịn, Tránh nhiễm chéo</td>
     </tr>
-<tr>
+<tr data-mgroup="Phụ kiện máy" data-minds="Thực phẩm|Dược phẩm|Công nghệ cao">
       <td><strong>Khớp nối mềm bằng vải</strong></td>
       <td>Phụ kiện máy</td>
       <td>Kết nối rung động / Ngừa phát thải bụi</td>
       <td>Thực phẩm, Dược phẩm, Công nghệ cao</td>
       <td>Cắt laser chuẩn xác, May đo theo máy</td>
     </tr>
-<tr>
+<tr data-mgroup="Thiết bị vỏ bồn" data-minds="Thực phẩm|Dược phẩm|Điện tử|Năng lượng|Công nghiệp nặng|Công nghiệp|Công nghệ cao">
       <td><strong>Bình lọc chất lỏng (Vessels)</strong></td>
       <td>Thiết bị vỏ bồn</td>
       <td>Vỏ chứa túi/lõi lọc áp suất</td>
@@ -177,6 +198,7 @@
     </tr>
 </tbody>
       </table>
+      <p class="mf-empty" data-mf-empty style="display:none">Không tìm thấy sản phẩm phù hợp với bộ lọc đã chọn.</p>
     </div>
   </div>
 </section>
@@ -231,18 +253,23 @@
           <li><a href="../contact.html">Liên hệ</a></li>
         </ul>
       </div>
-      <div>
-        <h5>Liên hệ</h5>
-        <ul>
-          <li>Khu Công nghiệp, TP. Hồ Chí Minh, Việt Nam</li>
-          <li><a href="tel:+84(0)28xxxxxxxx">+84 (0) 28 xxxx xxxx</a></li>
-          <li><a href="mailto:sales@betaratio.com">sales@betaratio.com</a></li>
-        </ul>
+      <div class="footer-hq">
+        <h5>Trụ sở chính</h5>
+        <address>
+          Khu Công nghiệp, TP. Hồ Chí Minh, Việt Nam<br>
+          <a href="tel:+84(0)28xxxxxxxx">+84 (0) 28 xxxx xxxx</a><br>
+          <a href="mailto:sales@betaratio.com">sales@betaratio.com</a>
+        </address>
+        <a href="../contact.html" class="btn btn-primary btn-sm">Liên hệ chúng tôi</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year></span> Betaratio. Bảo lưu mọi quyền.</span>
-      <span>Thiết kế lấy cảm hứng kiến trúc thông tin B2B — dữ liệu nội dung nội bộ Betaratio.</span>
+      <div class="legal-links">
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Điều khoản sử dụng</a>
+        <a href="../resources.html#certifications">Chứng nhận</a>
+      </div>
     </div>
   </div>
 </footer>
