@@ -4,17 +4,17 @@
    ========================================================= */
 
 :root {
-  /* Brand palette */
-  --navy-900: #0a1e30;
-  --navy-800: #0f2c47;
-  --navy-700: #163a5c;
-  --navy-600: #1e4a72;
-  --blue-700: #0d3f73;
-  --blue-600: #14549a;
-  --blue-500: #1c66b8;
-  --teal-600: #0b8f8a;
-  --teal-500: #10a9a3;
-  --teal-400: #3fc4bd;
+  /* Brand palette — chính thức: teal #009698, navy #123068 */
+  --navy-900: #123068;
+  --navy-800: #364f7f;
+  --navy-700: #596e95;
+  --navy-600: #7d8dac;
+  --blue-700: var(--navy-900);
+  --blue-600: var(--navy-800);
+  --blue-500: var(--navy-700);
+  --teal-600: #00787a;
+  --teal-500: #009698;
+  --teal-400: #59bbbc;
   --orange-500: #ee8a34;
   --orange-600: #d9721f;
 
@@ -177,6 +177,13 @@ section { padding: 72px 0; }
   color: var(--gray-300);
   text-transform: uppercase;
 }
+.brand-logo { padding: 4px 0; }
+.brand-logo-img {
+  height: 38px; width: auto; display: block;
+  background: var(--white); border-radius: 7px;
+  padding: 5px 10px;
+}
+.brand-logo-img-footer { height: 46px; }
 
 .main-nav { display: flex; align-items: center; gap: 2px; }
 .main-nav > ul { display: flex; align-items: center; gap: 2px; }

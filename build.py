@@ -118,7 +118,7 @@ MAIN_NAV = [
 
 def HEAD(title, description, depth, path="", extra=""):
     css = rel("css/style.css", depth)
-    fav = rel("images/favicon.svg", depth)
+    fav = rel("images/brand/logo-icon.png", depth)
     canonical = f"{SITE_DOMAIN_PLACEHOLDER}/{path}" if path else SITE_DOMAIN_PLACEHOLDER
     return f"""<!doctype html>
 <html lang="vi">
@@ -131,8 +131,9 @@ def HEAD(title, description, depth, path="", extra=""):
 <meta property="og:title" content="{title} | {SITE_NAME}">
 <meta property="og:description" content="{description}">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#0a1e30">
-<link rel="icon" type="image/svg+xml" href="{fav}">
+<meta name="theme-color" content="#123068">
+<link rel="icon" type="image/png" href="{fav}">
+<link rel="apple-touch-icon" href="{fav}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -182,9 +183,8 @@ def HEADER(active, depth):
     contact_active = " active" if active == "contact" else ""
     return f"""<header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="{rel('index.html', depth)}">
-      <span class="mark">{icon("droplet")}</span>
-      <span>{SITE_NAME}<small>Filtration &amp; Separation</small></span>
+    <a class="brand brand-logo" href="{rel('index.html', depth)}">
+      <img src="{rel('images/brand/logo.jpg', depth)}" alt="{SITE_NAME} — Premium Filter Media" class="brand-logo-img">
     </a>
     <nav class="main-nav">
       <ul>
@@ -211,9 +211,8 @@ def FOOTER(depth):
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="brand" href="{r('index.html')}">
-          <span class="mark">{icon("droplet")}</span>
-          <span>{SITE_NAME}<small>Filtration &amp; Separation</small></span>
+        <a class="brand brand-logo" href="{r('index.html')}">
+          <img src="{r('images/brand/logo.jpg')}" alt="{SITE_NAME} — Premium Filter Media" class="brand-logo-img brand-logo-img-footer">
         </a>
         <p>Công nghệ lọc và phân tách chuyên sâu: nâng tầm chất lượng, tối ưu chi phí vận hành cho nhà máy của bạn.</p>
         <div class="social-row">
@@ -364,7 +363,7 @@ def hero_art():
       <circle cx="140" cy="60" r="5"/>
       <circle cx="60" cy="140" r="3"/>
     </g>
-    <path d="M100 100 L100 28" stroke="#3fc4bd" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M100 100 L100 28" stroke="#59bbbc" stroke-width="2.4" stroke-linecap="round"/>
   </svg>
 </div>"""
 
@@ -393,7 +392,7 @@ INDUSTRIES = [
     dict(
         slug="food-beverage", nav_ic="coffee",
         name="Thực phẩm & Đồ uống", name_en="Food & Beverage",
-        grad=("#164b3c", "#0b8f8a"),
+        grad=("#164b3c", "#009698"),
         summary="Chống nhiễm xơ sợi, đạt chuẩn tiếp xúc thực phẩm trực tiếp cho dây chuyền siro, nước ngọt, bia rượu.",
         challenge_title="Thách thức ngành Thực phẩm & Đồ uống",
         challenges=[
@@ -415,7 +414,7 @@ INDUSTRIES = [
     dict(
         slug="pharmaceuticals", nav_ic="activity",
         name="Dược phẩm", name_en="Pharmaceuticals",
-        grad=("#1e2f5c", "#0b8f8a"),
+        grad=("#1e2f5c", "#009698"),
         summary="Vô trùng tuyệt đối và an toàn phòng chống cháy nổ khi sấy hạt, sấy bột thuốc khô.",
         challenge_title="Thách thức ngành Dược phẩm",
         challenges=[
@@ -437,7 +436,7 @@ INDUSTRIES = [
     dict(
         slug="electronics", nav_ic="cpu",
         name="Điện tử & Linh kiện bán dẫn", name_en="Electronics & Semiconductors",
-        grad=("#1b2a4a", "#3fc4bd"),
+        grad=("#1b2a4a", "#59bbbc"),
         summary="Kiểm soát tạp chất dưới micron, đáp ứng yêu cầu nước siêu tinh khiết (UPW) cho rửa bảng mạch.",
         challenge_title="Thách thức ngành Điện tử & Bán dẫn",
         challenges=[
@@ -459,7 +458,7 @@ INDUSTRIES = [
     dict(
         slug="high-tech-cleanrooms", nav_ic="shield",
         name="Công nghệ cao & Phòng sạch", name_en="High-Tech & Cleanrooms",
-        grad=("#1b2a4a", "#0b8f8a"),
+        grad=("#1b2a4a", "#009698"),
         summary="Kiểm soát hạt bụi trong không khí và triệt tiêu tĩnh điện cho linh kiện điện tử nhạy cảm.",
         challenge_title="Thách thức ngành Công nghệ cao & Phòng sạch",
         challenges=[
@@ -481,7 +480,7 @@ INDUSTRIES = [
     dict(
         slug="energy-heavy-industries", nav_ic="zap",
         name="Năng lượng & Công nghiệp nặng", name_en="Energy & Heavy Industries",
-        grad=("#3a2a12", "#0b8f8a"),
+        grad=("#3a2a12", "#009698"),
         summary="Lưu lượng lọc cực lớn, môi trường hóa chất ăn mòn mạnh, tối ưu chi phí thu hồi khoáng sản/dầu khí.",
         challenge_title="Thách thức ngành Năng lượng & Công nghiệp nặng",
         challenges=[
@@ -1758,8 +1757,8 @@ def contact_page():
 # =========================================================================
 def favicon_svg():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="14" fill="#0a1e30"/>
-<path d="M32 14l16 16a16 16 0 1 1-32 0z" fill="#10a9a3"/>
+<rect width="64" height="64" rx="14" fill="#123068"/>
+<path d="M32 14l16 16a16 16 0 1 1-32 0z" fill="#009698"/>
 </svg>"""
 
 
